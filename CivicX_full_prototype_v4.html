@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CivicX</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<style>
+:root{--bg:#f1f5fb;--cd:#fff;--tx:#0b1f3a;--mu:#64748b;--bl:#1677d2;--gr:#16a34a;--nv:#0b1f3a;--bd:#e2e8f0;--lo:#dcfce7;--lot:#15803d;--me:#fef3c7;--met:#b45309;--hi:#fee2e2;--hit:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08111f;--cd:#111d33;--tx:#e8eefb;--mu:#94a3b8;--bd:#22304d;--lo:#14351f;--lot:#86efac;--me:#3a2d0c;--met:#fcd34d;--hi:#3d1414;--hit:#fca5a5}}
+:root[data-theme="dark"]{--bg:#08111f;--cd:#111d33;--tx:#e8eefb;--mu:#94a3b8;--bd:#22304d;--lo:#14351f;--lot:#86efac;--me:#3a2d0c;--met:#fcd34d;--hi:#3d1414;--hit:#fca5a5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Poppins,"Noto Sans Telugu","Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;max-width:560px;margin:auto}
+.logo{font-weight:700;font-size:22px}.logo i{font-style:normal;color:var(--gr)}
+.ib{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:8px 12px;font-size:14px;color:var(--tx);cursor:pointer}
+main{padding:0 16px;max-width:560px;margin:auto}
+h3{margin:18px 0 8px;font-size:17px}
+.hero{background:linear-gradient(135deg,#0b1f3a,#1677d2 70%,#16a34a);color:#fff;border-radius:20px;padding:20px}
+.hero h2{margin:0 0 4px;font-size:21px}.hero p{margin:0;opacity:.85;font-size:13px}
+.st{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.st div{background:rgba(255,255,255,.15);border-radius:12px;padding:8px;text-align:center}.st b{font-size:20px;display:block}.st small{font-size:11px;opacity:.85}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:16px;padding:14px;margin:10px 0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ft{background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:12px;text-align:left;color:var(--tx);font:inherit;font-size:13px;cursor:pointer}
+.ft b{display:block;font-size:13px;margin:4px 0 2px}.ft span{color:var(--mu);font-size:11px}.ft .e{font-size:22px}
+.sos{background:#dc2626;color:#fff;border:0;border-radius:14px;padding:13px;width:100%;font:inherit;font-weight:600;margin-top:12px}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cat{border:1px solid var(--bd);background:var(--cd);color:var(--tx);border-radius:12px;padding:10px 4px;font:inherit;font-size:11px;cursor:pointer}
+.cat .e{display:block;font-size:22px}.cat.sel{border-color:var(--bl);background:rgba(22,119,210,.12)}
+label{font-size:12px;color:var(--mu);display:block;margin:12px 0 4px}
+input,textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit;font-size:14px}
+textarea{min-height:70px}
+.btn{background:var(--bl);color:#fff;border:0;border-radius:12px;padding:12px;width:100%;font:inherit;font-weight:600;margin-top:10px;cursor:pointer}
+.btn.g{background:var(--gr)}.btn.a{background:rgba(22,119,210,.12);color:var(--bl)}.btn.s{width:auto;padding:8px 12px;font-size:13px;margin:6px 6px 0 0}
+.btn:disabled{opacity:.5}
+.pill{font-size:11px;padding:3px 9px;border-radius:99px;font-weight:600;white-space:nowrap}
+.p0{background:var(--lo);color:var(--lot)}.p1{background:var(--me);color:var(--met)}.p2{background:var(--hi);color:var(--hit)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mu{color:var(--mu);font-size:12px}
+.ai{border:1px dashed var(--bl);border-radius:12px;padding:10px;margin-top:10px;font-size:13px;display:none;background:rgba(22,119,210,.06)}
+.chips span{display:inline-block;border:1px solid var(--bd);border-radius:99px;padding:5px 12px;margin:0 6px 6px 0;font-size:13px;cursor:pointer}
+.chips span.on{background:var(--bl);color:#fff;border-color:var(--bl)}
+img.pv{width:100%;max-height:180px;object-fit:cover;border-radius:10px;margin-top:8px;display:none}
+.stp{display:flex;gap:4px;margin:10px 0 2px}.stp i{flex:1;height:6px;border-radius:4px;background:var(--bd)}.stp i.on{background:var(--gr)}
+.big{font-size:44px;font-weight:700;color:var(--gr);line-height:1}
+.bar{height:8px;border-radius:6px;background:var(--bd);overflow:hidden;margin:4px 0 10px}.bar i{display:block;height:100%;background:var(--bl)}
+.heat{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}.heat i{aspect-ratio:1;border-radius:8px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--cd);border-top:1px solid var(--bd);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:none;border:0;color:var(--mu);font:inherit;font-size:10px;padding:4px 0;cursor:pointer}
+nav button span{display:block;font-size:20px}nav button.on{color:var(--bl);font-weight:600}
+.view{display:none}.view.on{display:block}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:13px;display:none;max-width:90%;text-align:center}
+
+body{background:radial-gradient(800px 380px at 90% -4%,rgba(22,119,210,.2),transparent 60%),radial-gradient(700px 380px at -10% 12%,rgba(22,163,74,.15),transparent 60%),var(--bg);background-attachment:fixed;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(14px)}
+.top>div:last-child{display:flex;gap:8px}
+.logo{font-size:24px;letter-spacing:-.5px}
+.ib{box-shadow:0 2px 8px rgba(11,31,58,.08);transition:.2s}.ib:active{transform:scale(.94)}
+.hero{position:relative;overflow:hidden;padding:24px 20px;background:linear-gradient(120deg,#0b1f3a,#1677d2 55%,#16a34a,#1677d2);background-size:250% 250%;animation:shift 14s ease infinite;box-shadow:0 14px 34px rgba(22,119,210,.3)}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12);filter:blur(2px)}
+.hero::before{width:170px;height:170px;right:-50px;top:-60px}.hero::after{width:110px;height:110px;right:50px;bottom:-60px}
+.hero>*{position:relative;z-index:1}.hero h2{font-size:26px;line-height:1.2;letter-spacing:-.4px}.hero p{font-size:13.5px;margin-top:6px}
+.st div{backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.22)}.st b{font-size:26px}
+@keyframes shift{50%{background-position:100% 50%}}
+.card{border-radius:18px;box-shadow:0 6px 22px rgba(11,31,58,.07)}
+.ft{border-radius:16px;box-shadow:0 4px 14px rgba(11,31,58,.06);transition:.2s}
+.ft:hover{transform:translateY(-3px);border-color:var(--bl);box-shadow:0 10px 24px rgba(22,119,210,.18)}.ft:active,.cat:active{transform:scale(.96)}
+.ft .e{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:rgba(22,119,210,.12);margin-bottom:6px}
+.cat{transition:.2s}.cat:hover{border-color:var(--bl)}.cat.sel{box-shadow:0 0 0 2px var(--bl)}
+.btn{background:linear-gradient(135deg,#1e88e5,#0f5fb3);box-shadow:0 6px 16px rgba(22,119,210,.28);transition:.2s}.btn.g{background:linear-gradient(135deg,#22c55e,#15803d);box-shadow:0 6px 16px rgba(22,163,74,.28)}
+.btn.a{background:rgba(22,119,210,.12);color:var(--bl);box-shadow:none}.btn:active{transform:scale(.97)}
+.btn.rec{background:#dc2626;color:#fff;animation:ring 1.2s infinite}
+.sos{box-shadow:0 8px 20px rgba(220,38,38,.35);animation:ring 2.4s infinite;border-radius:16px}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(220,38,38,.5)}100%{box-shadow:0 0 0 18px rgba(220,38,38,0)}}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--bl);border-color:transparent}
+.pill{box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+.bar i{background:linear-gradient(90deg,#1677d2,#16a34a)}
+.heat i{transition:.2s}.heat i:hover{transform:scale(1.15)}
+nav{left:50%;right:auto;transform:translateX(-50%);width:calc(100% - 20px);max-width:540px;bottom:calc(10px + env(safe-area-inset-bottom,0px));border:1px solid var(--bd);border-radius:22px;padding:6px 4px;background:color-mix(in srgb,var(--cd) 86%,transparent);backdrop-filter:blur(16px);box-shadow:0 12px 32px rgba(11,31,58,.2)}
+nav button{transition:.2s}nav button.on span{transform:translateY(-3px) scale(1.15)}nav button span{transition:.2s}
+.view.on{animation:vin .35s ease}@keyframes vin{from{opacity:0;transform:translateY(10px)}}
+.mapw{position:relative;height:56vh;min-height:340px;border-radius:20px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 10px 28px rgba(11,31,58,.18)}
+#mp{height:100%;background:#0b1f3a}
+.hud{position:absolute;left:10px;top:10px;z-index:1100;background:rgba(8,17,31,.75);color:#9be7ff;font:600 11px ui-monospace,monospace;padding:7px 10px;border-radius:9px;backdrop-filter:blur(6px)}
+.hud::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-right:6px;animation:bl 1.2s infinite}@keyframes bl{50%{opacity:.2}}
+.lyr{position:absolute;right:10px;top:10px;z-index:1100;display:flex;border-radius:10px;overflow:hidden}
+.lyr button{border:0;padding:7px 10px;font:inherit;font-size:12px;background:rgba(8,17,31,.75);color:#fff;cursor:pointer}.lyr button.on{background:var(--bl)}
+.pin{position:relative;width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--c);display:grid;place-items:center;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.45)}
+.pin span{transform:rotate(45deg);font-size:16px}
+.pin.hot::after{content:"";position:absolute;inset:-3px;border-radius:inherit;border:2px solid var(--c);animation:pp 1.6s infinite}@keyframes pp{to{transform:scale(1.9);opacity:0}}
+.me{width:18px;height:18px;border-radius:50%;background:#2f8bff;border:3px solid #fff;animation:pm 1.8s infinite}@keyframes pm{0%{box-shadow:0 0 0 0 rgba(47,139,255,.7)}100%{box-shadow:0 0 0 24px rgba(47,139,255,0)}}
+.unit{font-size:26px;filter:drop-shadow(0 2px 3px #000)}
+.ml{cursor:pointer;transition:.2s}.ml:hover{border-color:var(--bl)}
+.lg{display:flex;gap:12px;margin-top:8px;font-size:12px;color:var(--mu)}.lg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+#gate{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;padding:20px;background:radial-gradient(900px 500px at 70% 15%,rgba(70,100,230,.38),transparent 60%),linear-gradient(160deg,#050b18,#0c1a3a 60%,#0a1630);color:#fff;text-align:center;transition:opacity .4s,visibility .4s}
+#gate.off{opacity:0;visibility:hidden;pointer-events:none}
+.gi{width:100%;max-width:420px}.gl{font-size:28px;font-weight:700;margin-bottom:22px}.gl i{font-style:normal;color:#22c55e}
+.gic{width:54px;height:54px;margin:0 auto 18px;border-radius:50%;background:rgba(255,255,255,.09);display:grid;place-items:center;font-size:24px}
+#gate h1{font-size:22px;margin:0 0 6px}#gate p{margin:2px 0;color:#7aa7ff;font-weight:600;font-size:15px}
+#gate button{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:12px;padding:16px 18px;border:0;border-radius:18px;background:rgba(230,240,255,.96);color:#0b1f3a;font:inherit;text-align:left;cursor:pointer;transition:.2s}
+#gate button:first-of-type{margin-top:26px}
+#gate button:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.4)}#gate button:active{transform:scale(.98)}
+#gate button b{display:block;font-size:17px}#gate button small{display:block;color:#64748b;font-size:12px}#gate button em{font-style:normal;color:#1677d2;font-weight:700;font-size:13px}
+.gn{margin-top:22px;font-size:12px;line-height:1.6;color:#aab8d6}
+.top>div:last-child{align-items:center}
+.seg{display:flex;background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:3px;box-shadow:0 2px 8px rgba(11,31,58,.08)}
+.seg button{border:0;background:none;padding:6px 9px;border-radius:11px;font:inherit;font-size:13px;font-weight:600;color:var(--tx);cursor:pointer;transition:.2s}
+.seg button.on{background:#0b1f3a;color:#fff}
+.sos{display:flex;align-items:center;gap:12px;text-decoration:none;text-align:left;padding:12px 16px;background:linear-gradient(120deg,#b91c1c,#ef4444)}
+.sos .ph{width:44px;height:44px;flex:none;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:20px}
+.sos .sx{flex:1;display:flex;flex-direction:column;font-size:14px;line-height:1.35}.sos .sx small{font-weight:400;opacity:.92;font-size:12px}
+.sos .n{font-size:26px;font-weight:700}
+@media (max-width:420px){.top{padding:12px 10px}.top .ib{padding:7px 8px;font-size:12px}.logo{font-size:20px}.seg button{padding:6px 7px}}
+html[lang=te] *,html[lang=hi] *{letter-spacing:0!important}
+.ex{display:grid;grid-template-columns:64px 1fr;gap:8px 12px;align-items:start}
+.exh{width:64px;height:64px;border-radius:14px;display:grid;place-items:center;font-size:30px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.live{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#dc2626;background:rgba(220,38,38,.1);padding:2px 8px;border-radius:99px}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:#dc2626;animation:bl 1.2s infinite}
+.pg{height:6px;border-radius:4px;background:var(--bd);overflow:hidden;margin:6px 0 2px}.pg i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#1677d2);transition:width 1s linear}
+</style>
+</head>
+<body>
+<div id="gate"><div class="gi"><div class="gl">Civic<i>X</i></div><div class="gic">🌐</div><h1>Choose your language</h1><p>अपनी भाषा चुनें</p><p>మీ భాషను ఎంచుకోండి</p>
+<button data-l="en-IN"><span><b>English</b></span><em>EN →</em></button>
+<button data-l="hi-IN"><span><b>हिन्दी</b><small>Hindi</small></span><em>हि →</em></button>
+<button data-l="te-IN"><span><b>తెలుగు</b><small>Telugu</small></span><em>తె →</em></button>
+<div class="gn">Change any time from the top bar. ऊपर से कभी भी बदलें। పైన ఎప్పుడైనా మార్చవచ్చు.</div></div></div>
+<div class="top"><div style="display:flex;align-items:center;gap:10px"><button class="ib" id="bk" aria-label="Back to language">←</button><div class="logo">Civic<i>X</i></div></div><div><div class="seg" id="sg"><button class="on" data-l="en-IN">EN</button><button data-l="hi-IN">हि</button><button data-l="te-IN">తె</button></div><button class="ib" id="adm">🛡️ Authority</button></div></div>
+<main>
+
+<section id="home" class="view on">
+  <div class="hero"><h2>Report it. Track it. Fix it.</h2><p>AI-powered civic reporting for roads, water, accidents and more.</p><div class="st" id="hs"></div></div>
+  <a class="sos" href="tel:112" onclick="sosGo()"><span class="ph">📞</span><span class="sx"><b>🚨 Road accident? Emergency help</b><small>Tap to call 112 now</small></span><span class="n">112</span></a>
+  <button class="btn a" onclick="show('map')">🛰️ Open live satellite map</button>
+  <h3>7 AI tools inside CivicX</h3>
+  <div class="g2" id="fts"></div>
+</section>
+
+<section id="report" class="view">
+  <h3>New report</h3>
+  <div class="cats" id="cats"></div>
+  <div id="ex"></div>
+  <div class="card">
+    <label>1. Photo (AI Civic Vision)</label>
+    <input type="file" id="photo" accept="image/*" capture="environment">
+    <img id="pv" class="pv" alt="">
+    <button class="btn a" onclick="analyze()">🤖 Analyze photo with AI</button>
+    <div class="ai" id="aibox"></div>
+    <label>2. Or speak in your language (Civic Voice)</label>
+    <div class="chips" id="lang"><span class="on" data-l="en-IN">English</span><span data-l="te-IN">తెలుగు</span><span data-l="hi-IN">हिन्दी</span></div>
+    <button class="btn a s" id="mb" onclick="mic()">🎤 Speak</button><button class="btn a s" onclick="sample()">Use sample voice</button>
+    <label>3. Description</label>
+    <textarea id="desc" placeholder="Describe the problem"></textarea>
+    <div class="mu" id="tr"></div>
+    <label>4. Location</label>
+    <input id="loc" placeholder="Area / landmark">
+    <button class="btn a s" onclick="gps()">📍 Use my location</button>
+    <div class="mu" id="route" style="margin-top:10px"></div>
+    <button class="btn g" onclick="submitR()">Confirm and submit</button>
+  </div>
+</section>
+
+<section id="track" class="view"><h3>Reported incidents</h3><div class="mu">Duplicate reports merge into one incident.</div><div id="tl"></div></section>
+
+<section id="map" class="view">
+  <h3>Live satellite map</h3>
+  <div class="mapw"><div id="mp"></div><div class="hud" id="hud">🛰️ LIVE</div><div class="lyr"><button class="on" id="bs">🛰️ Satellite</button><button id="bt">🗺️ Street</button></div></div>
+  <div class="lg"><span><i style="background:#16a34a"></i>Low</span><span><i style="background:#f59e0b"></i>Medium</span><span><i style="background:#dc2626"></i>High</span></div>
+  <div class="mu" id="eta" style="margin-top:8px"></div>
+  <button class="btn a s" id="trk" onclick="trk()">📡 Track my live location</button><button class="btn a s" onclick="dispatch()">🚓 Dispatch team to top priority</button>
+  <div class="mu" id="nr" style="margin-top:6px"></div>
+  <h3>Open incidents on map</h3><div id="ml"></div>
+</section>
+
+<section id="pulse" class="view">
+  <h3>Civic Pulse: Kukatpally (demo)</h3>
+  <div class="card"><div class="row"><div><div class="big" id="sc">82</div><div class="mu">out of 100 · sample data</div></div><span class="pill p0">Healthy</span></div><div style="margin-top:12px" id="ind"></div>
+  <div class="mu">Score is the average of the four indicators. Illustrative, not an official government rating.</div></div>
+  <h3>Hotspot map (sample)</h3><div class="card"><div class="heat" id="heat"></div><div class="mu" style="margin-top:8px">Darker red means more repeat complaints.</div></div>
+  <h3>Predictive alerts</h3><div id="pred"></div>
+</section>
+
+<section id="jobs" class="view"><h3>Civic jobs and volunteering</h3><div class="mu">Work that helps fix the problems people report.</div><div id="jl"></div></section>
+
+<section id="admin" class="view"><h3>Authority dashboard</h3><div class="g2" id="as"></div><div class="mu" style="margin-top:8px">AI suggests priority. The authority reviews and can override it.</div><div id="al"></div></section>
+
+</main>
+<div class="toast" id="toast"></div>
+<nav id="nav">
+  <button class="on" data-v="home"><span>🏠</span>Home</button>
+  <button data-v="report"><span>📸</span>Report</button>
+  <button data-v="track"><span>📋</span>Track</button>
+  <button data-v="map"><span>🛰️</span>Map</button>
+  <button data-v="pulse"><span>📊</span>Pulse</button>
+  <button data-v="jobs"><span>💼</span>Jobs</button>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+var C={
+ road:{e:"🕳️",n:"Road / Pothole",d:"Roads and Buildings Dept.",w:4,v:["Pothole detected","Large crack and loose gravel, risky for two-wheelers","Send to Roads and Buildings for site inspection","Large pothole on the road surface, unsafe for two-wheelers."]},
+ acc:{e:"🚑",n:"Accident",d:"Traffic Police + Ambulance",w:5,v:["Road accident scene","Vehicles on the road, possible injuries","Alert traffic police and call 108 immediately","Road accident reported, vehicles blocking the lane."]},
+ water:{e:"🚰",n:"Water problem",d:"Water Supply Board",w:5,v:["Water leakage detected","Continuous flow, water wastage visible","Send to Water Supply Board for pipe repair","Water pipe leaking on the street, water is being wasted."]},
+ light:{e:"💡",n:"Street light",d:"Electricity Dept.",w:2,v:["Street light fault","Pole visible, light not working","Send to Electricity Dept. for bulb or wiring check","Street light is not working, area is dark at night."]},
+ waste:{e:"🗑️",n:"Garbage",d:"Municipal Sanitation",w:3,v:["Garbage pile detected","Overflowing waste near the roadside","Schedule pickup with Municipal Sanitation","Garbage has piled up and is not being collected."]},
+ other:{e:"📣",n:"Other",d:"Municipal Office",w:1,v:["Civic issue detected","General public problem visible","Forward to the Municipal Office for review","General civic problem reported at this location."]}
+};
+var ST=["Submitted","In progress","Work done: please verify","Verified ✓"],PN=["Low","Medium","High"];
+var INC=[
+ {id:1,cat:"road",loc:"Kukatpally Main Road",desc:"Deep pothole near the bus stop",n:24,age:6,st:1,ov:null,ll:[17.4948,78.3996]},
+ {id:2,cat:"water",loc:"KPHB Phase 3",desc:"Water pipe leaking for two days",n:8,age:2,st:0,ov:null,ll:[17.4875,78.389]},
+ {id:3,cat:"light",loc:"JNTU Junction",desc:"Street lights off on the flyover side",n:3,age:10,st:0,ov:null,ll:[17.4933,78.3915]},
+ {id:4,cat:"waste",loc:"Market Lane",desc:"Garbage not collected",n:5,age:4,st:2,ov:null,ll:[17.488,78.412]}
+];
+var JOBS=[["Field Reporter (part-time)","CivicX Team · ₹6,000/month","Verify reports in your area and upload photos."],["Data Entry Volunteer","Ward Office · Certificate","Help sort and tag citizen complaints."],["Road Repair Helper","Local Contractor · ₹500/day","Support pothole repair crews."],["Awareness Intern","NGO Partner · Stipend + LOR","Run clean-water and road-safety campaigns."]];
+var FT=[["📷","AI Civic Vision","Photo to issue, category and severity","report"],["🧩","Duplicate Detection","25 reports become 1 incident","report"],["⚖️","Priority Intelligence","High, medium or low suggestion","admin"],["🗣️","Civic Voice","Speak in Telugu, Hindi or English","report"],["✅","Proof of Resolution","Before and after, citizen verifies","track"],["📊","Civic Pulse","Neighbourhood health score","pulse"],["🔮","Predictive Insights","Spot repeat problem areas","pulse"]];
+var SAMPLE={"en-IN":["Street light is not working near the junction.","Street light is not working near the junction."],"te-IN":["మా వీధిలో నీరు లీక్ అవుతోంది","Water is leaking on our street."],"hi-IN":["हमारी सड़क पर गड्ढा है","There is a pothole on our road."]};
+var KW=[["acc",/accident|ప్రమాద|दुर्घटना/i],["water",/water|leak|నీరు|నీళ్|पानी/i],["road",/road|pothole|గుంత|రోడ్|सड़क|गड्ढा/i],["light",/light|లైట్|बत्ती|बिजली/i],["waste",/garbage|waste|చెత్త|कचरा/i]];
+var sel="road",lang="en-IN",$=function(i){return document.getElementById(i)};
+
+function score(i){return C[i.cat].w+Math.min(i.n,25)/5+i.age/5}
+function pr(i){if(i.ov!==null)return i.ov;var s=score(i);return s>=7?2:s>=4?1:0}
+function toast(m){var t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(function(){t.style.display="none"},3000)}
+function show(v){document.querySelectorAll(".view").forEach(function(x){x.classList.toggle("on",x.id===v)});document.querySelectorAll("#nav button").forEach(function(b){b.classList.toggle("on",b.dataset.v===v)});window.scrollTo(0,0);if(v==="map")setTimeout(initMap,60)}
+document.querySelectorAll("#nav button").forEach(function(b){b.onclick=function(){show(b.dataset.v)}});
+$("adm").onclick=function(){show("admin")};
+
+function drawCats(){
+  $("cats").innerHTML=Object.keys(C).map(function(k){return '<button class="cat'+(k===sel?' sel':'')+'" data-c="'+k+'"><span class="e">'+C[k].e+'</span>'+C[k].n+'</button>'}).join("");
+  $("cats").querySelectorAll(".cat").forEach(function(b){b.onclick=function(){sel=b.dataset.c;drawCats()}});
+  $("route").innerHTML="➡️ Auto-routed to: <b>"+C[sel].d+"</b>";drawEx();
+}
+function drawHome(){
+  var o=INC.filter(function(i){return i.st<3}).length,t=INC.reduce(function(a,i){return a+i.n},0);
+  $("hs").innerHTML='<div><b>'+INC.length+'</b><small>Incidents</small></div><div><b>'+t+'</b><small>Reports</small></div><div><b>'+(INC.length-o)+'</b><small>Fixed</small></div>';
+  cnt();$("fts").innerHTML=FT.map(function(f){return '<button class="ft" data-v="'+f[3]+'"><span class="e">'+f[0]+'</span><b>'+f[1]+'</b><span>'+f[2]+'</span></button>'}).join("");
+  $("fts").querySelectorAll(".ft").forEach(function(b){b.onclick=function(){show(b.dataset.v)}});
+}
+function pill(i){var p=pr(i);return '<span class="pill p'+p+'">'+PN[p]+' priority</span>'}
+function stp(i){return '<div class="stp">'+ST.map(function(s,k){return '<i class="'+(k<=i.st?'on':'')+'"></i>'}).join("")+'</div><div class="mu">'+ST[i.st]+'</div>'}
+function drawTrack(){
+  $("tl").innerHTML=INC.slice().reverse().map(function(i){
+    var c=C[i.cat],a="";
+    if(i.st===2)a='<div class="mu" style="margin-top:8px">Authority uploaded an after-repair photo. Is it really fixed?</div><button class="btn g s" onclick="verify('+i.id+',1)">✅ Yes, fixed</button><button class="btn s" style="background:#dc2626" onclick="verify('+i.id+',0)">❌ Still broken</button>';
+    return '<div class="card"><div class="row"><b>'+c.e+' '+c.n+'</b>'+pill(i)+'</div><div style="margin-top:6px;font-size:14px">'+i.desc+'</div><div class="mu">📍 '+i.loc+' · 👥 '+i.n+' report'+(i.n>1?'s':'')+' · #'+i.id+'</div>'+stp(i)+a+'</div>';
+  }).join("");
+}
+function verify(id,ok){var i=INC.find(function(x){return x.id===id});if(ok){i.st=3;toast("Thanks! Verification recorded.")}else{i.st=1;i.n++;toast("Reopened and sent back to the authority.")}drawAll()}
+function drawAdmin(){
+  var o=INC.filter(function(i){return i.st<3}),h=o.filter(function(i){return pr(i)===2}).length;
+  $("as").innerHTML='<div class="card"><b style="font-size:24px">'+o.length+'</b><div class="mu">Open incidents</div></div><div class="card"><b style="font-size:24px">'+h+'</b><div class="mu">High priority</div></div>';
+  $("al").innerHTML=INC.slice().sort(function(a,b){return pr(b)-pr(a)||b.n-a.n}).map(function(i){
+    var c=C[i.cat],b="";
+    if(i.st===0)b='<button class="btn s" onclick="adv('+i.id+',1)">Assign and start work</button>';
+    else if(i.st===1)b='<button class="btn g s" onclick="adv('+i.id+',2)">Upload after-photo, mark done</button>';
+    else if(i.st===2)b='<span class="mu">Waiting for citizen verification</span>';
+    else b='<span class="mu">Closed ✓</span>';
+    return '<div class="card"><div class="row"><b>'+c.e+' '+c.n+' · '+i.loc+'</b>'+pill(i)+'</div><div class="mu">AI score '+score(i).toFixed(1)+' · '+i.n+' reports · '+i.age+' days old · '+c.d+'</div><label>Override priority</label><select onchange="ov('+i.id+',this.value)"><option value="">Keep AI suggestion</option><option value="2">High</option><option value="1">Medium</option><option value="0">Low</option></select>'+b+'</div>';
+  }).join("");
+}
+function ov(id,v){var i=INC.find(function(x){return x.id===id});i.ov=v===""?null:+v;drawAll();toast("Priority updated and reason recorded")}
+function adv(id,s){INC.find(function(x){return x.id===id}).st=s;drawAll();toast(s===1?"Assigned. Work started.":"Marked done. Citizen will verify.")}
+function drawPulse(){
+  var I=[["Resolution performance",88],["Response speed",81],["Repeat issue performance",80],["Citizen satisfaction",79]];
+  $("sc").textContent=Math.round(I.reduce(function(a,x){return a+x[1]},0)/I.length);
+  $("ind").innerHTML=I.map(function(x){return '<div class="row mu"><span>'+x[0]+'</span><b>'+x[1]+'</b></div><div class="bar"><i style="width:'+x[1]+'%"></i></div>'}).join("");
+  var H=[1,1,2,1,0,0,0,3,4,2,1,0,1,2,5,3,1,0,0,1,2,1,0,0],cl=["#22c55e","#86efac","#fde047","#fb923c","#ef4444","#b91c1c"];
+  $("heat").innerHTML=H.map(function(v){return '<i style="background:'+cl[v]+'"></i>'}).join("");
+  $("pred").innerHTML=[["🕳️","Kukatpally Main Road","3 pothole complaints in 30 days. Likely to worsen. Suggest resurfacing."],["🚰","KPHB Phase 3","Repeated pipe leakage. Inspect the drainage line."],["💡","JNTU Junction","Street lights failing again. Check the wiring."]].map(function(p){return '<div class="card"><b>'+p[0]+' '+p[1]+'</b><div class="mu">'+p[2]+' (sample)</div></div>'}).join("");
+}
+function drawJobs(){$("jl").innerHTML=JOBS.map(function(j,k){return '<div class="card"><b>'+j[0]+'</b><div class="mu">'+j[1]+'</div><div style="margin:6px 0;font-size:14px">'+j[2]+'</div><button class="btn a s" id="ap'+k+'" onclick="ap('+k+')">Apply</button></div>'}).join("")}
+function ap(k){var b=$("ap"+k);b.textContent="Applied ✓";b.disabled=true;toast("Application sent (demo)")}
+function drawAll(){drawHome();drawTrack();drawAdmin();drawMap()}
+
+$("photo").onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){$("pv").src=r.result;$("pv").style.display="block"};r.readAsDataURL(f)};
+function analyze(){
+  if($("pv").style.display!=="block"){toast("Add a photo first");return}
+  var b=$("aibox");b.style.display="block";b.textContent="🤖 Analyzing photo...";
+  setTimeout(function(){
+    var v=C[sel].v,cf=88+Math.floor(Math.random()*8);
+    b.innerHTML='<b>'+v[0]+'</b> · '+cf+'% confidence<br>Category: '+C[sel].n+'<br>Severity: '+v[1]+'<br>Next step: '+v[2]+'<div class="mu" style="margin-top:6px">Demo AI. The full version uses a vision model. The authority reviews every suggestion.</div><button class="btn a s" onclick="useAI()">Use this description</button>';
+  },900);
+}
+function useAI(){$("desc").value=C[sel].v[3];toast("Description added")}
+function guess(t){for(var k=0;k<KW.length;k++){if(KW[k][1].test(t)){sel=KW[k][0];drawCats();return}}}
+$("lang").querySelectorAll("span").forEach(function(s){s.onclick=function(){setLang(s.dataset.l);toast("🌐 "+s.textContent+" ✓")}});$("sg").querySelectorAll("button").forEach(function(b){b.onclick=function(){setLang(b.dataset.l)}});$("bk").onclick=function(){gate(1)};
+function sample(){var s=SAMPLE[lang];$("desc").value=s[0];$("tr").textContent="Translated (demo): "+s[1];guess(s[0]);toast("Category detected: "+C[sel].n)}
+function mic(){
+  var R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){toast("Voice not supported here. Using sample.");sample();return}
+  try{var r=new R();r.lang=lang;r.onresult=function(e){var t=e.results[0][0].transcript;if(/[\u0C00-\u0C7F]/.test(t)&&ui!=="te")setLang("te-IN");else if(/[\u0900-\u097F]/.test(t)&&ui!=="hi")setLang("hi-IN");$("desc").value=t;$("tr").textContent="Heard in "+lang+". Translation needs the AI service in the full version.";guess(t)};r.onerror=function(){toast("Mic blocked. Using sample.");sample()};r.onend=function(){$("mb").classList.remove("rec")};r.start();$("mb").classList.add("rec");toast("Listening...")}catch(x){sample()}
+}
+function gps(){if(!navigator.geolocation){toast("Location not supported");return}navigator.geolocation.getCurrentPosition(function(p){lastLL=[p.coords.latitude,p.coords.longitude];$("loc").value=p.coords.latitude.toFixed(4)+", "+p.coords.longitude.toFixed(4);toast("Location added")},function(){toast("Location blocked, type it instead")})}
+function submitR(){
+  var d=$("desc").value.trim(),l=$("loc").value.trim();
+  if(!d||!l){toast("Add a description and location");return}
+  var m=INC.find(function(i){var a=i.loc.toLowerCase(),b=l.toLowerCase();return i.cat===sel&&i.st<3&&(a.indexOf(b)>-1||b.indexOf(a)>-1)});
+  if(m){m.n++;toast("Duplicate found. Merged into incident #"+m.id+" ("+m.n+" reports)")}
+  else{INC.push({id:INC.length+1,cat:sel,loc:l,desc:d,n:1,age:0,st:0,ov:null,ll:lastLL||[17.4915+(Math.random()-.5)*.02,78.4+(Math.random()-.5)*.02]});toast("New incident created and routed to "+C[sel].d)}
+  lastLL=null;$("desc").value="";$("loc").value="";$("tr").textContent="";$("aibox").style.display="none";
+  drawAll();show("track");
+}
+
+var TE={"Home":"హోమ్","Report":"ఫిర్యాదు","Track":"ట్రాక్","Map":"మ్యాప్","Pulse":"పల్స్","Jobs":"ఉద్యోగాలు","Authority":"అధికారులు","Report it. Track it. Fix it.":"ఫిర్యాదు చేయండి. ట్రాక్ చేయండి. పరిష్కరించండి.","AI-powered civic reporting for roads, water, accidents and more.":"రోడ్లు, నీరు, ప్రమాదాలు మరియు మరెన్నో కోసం AI ఆధారిత పౌర ఫిర్యాదులు.","Incidents":"సంఘటనలు","Reports":"నివేదికలు","Fixed":"పరిష్కరించినవి","reports":"ఫిర్యాదులు","report":"ఫిర్యాదు","🚨 Road accident? Emergency help":"🚨 రోడ్డు ప్రమాదమా? అత్యవసర సహాయం","🛰️ Open live satellite map":"🛰️ ప్రత్యక్ష ఉపగ్రహ మ్యాప్ తెరవండి","7 AI tools inside CivicX":"CivicXలో 7 AI సాధనాలు","AI Civic Vision":"AI సివిక్ విజన్","Duplicate Detection":"నకిలీ గుర్తింపు","Priority Intelligence":"ప్రాధాన్యత ఇంటెలిజెన్స్","Civic Voice":"సివిక్ వాయిస్","Proof of Resolution":"పరిష్కార రుజువు","Civic Pulse":"సివిక్ పల్స్","Predictive Insights":"భవిష్యత్ అంచనాలు","Photo to issue, category and severity":"ఫోటో నుండి సమస్య, వర్గం, తీవ్రత","25 reports become 1 incident":"25 నివేదికలు = 1 సంఘటన","High, medium or low suggestion":"అధిక, మధ్యస్థ, తక్కువ సూచన","Speak in Telugu, Hindi or English":"తెలుగు, హిందీ, ఆంగ్లంలో మాట్లాడండి","Before and after, citizen verifies":"ముందు, తర్వాత, పౌరుడు ధృవీకరిస్తారు","Neighbourhood health score":"ప్రాంత ఆరోగ్య స్కోర్","Spot repeat problem areas":"పునరావృత సమస్య ప్రాంతాలు","New report":"కొత్త ఫిర్యాదు","Road / Pothole":"రోడ్డు / గుంత","Accident":"ప్రమాదం","Water problem":"నీటి సమస్య","Street light":"వీధి దీపం","Garbage":"చెత్త","Other":"ఇతర","Roads and Buildings Dept.":"రోడ్లు & భవనాల శాఖ","Traffic Police + Ambulance":"ట్రాఫిక్ పోలీస్ + అంబులెన్స్","Water Supply Board":"నీటి సరఫరా బోర్డు","Electricity Dept.":"విద్యుత్ శాఖ","Municipal Sanitation":"మున్సిపల్ పారిశుద్ధ్యం","Municipal Office":"మున్సిపల్ కార్యాలయం","1. Photo (AI Civic Vision)":"1. ఫోటో (AI సివిక్ విజన్)","🤖 Analyze photo with AI":"🤖 AIతో ఫోటోను విశ్లేషించండి","2. Or speak in your language (Civic Voice)":"2. లేదా మీ భాషలో మాట్లాడండి","🎤 Speak":"🎤 మాట్లాడండి","Use sample voice":"నమూనా వాయిస్ వాడండి","3. Description":"3. వివరణ","4. Location":"4. ప్రదేశం","📍 Use my location":"📍 నా లొకేషన్ వాడండి","➡️ Auto-routed to:":"➡️ స్వయంచాలకంగా పంపబడింది:","Confirm and submit":"నిర్ధారించి సమర్పించండి","Describe the problem":"సమస్యను వివరించండి","Area / landmark":"ప్రాంతం / గుర్తు","Translated (demo):":"అనువాదం (డెమో):","Reported incidents":"నివేదించిన సంఘటనలు","Duplicate reports merge into one incident.":"ఒకే సమస్య నివేదికలు ఒకే సంఘటనగా కలుస్తాయి.","Submitted":"సమర్పించబడింది","In progress":"పనిలో ఉంది","Work done: please verify":"పని పూర్తి: ధృవీకరించండి","Verified ✓":"ధృవీకరించబడింది ✓","Low priority":"తక్కువ ప్రాధాన్యత","Medium priority":"మధ్యస్థ ప్రాధాన్యత","High priority":"అధిక ప్రాధాన్యత","Low":"తక్కువ","Medium":"మధ్యస్థం","High":"అధికం","✅ Yes, fixed":"✅ అవును, బాగైంది","❌ Still broken":"❌ ఇంకా సమస్య ఉంది","Authority uploaded an after-repair photo. Is it really fixed?":"మరమ్మతు తర్వాత ఫోటో అప్‌లోడ్ అయింది. నిజంగా బాగైందా?","Deep pothole near the bus stop":"బస్ స్టాప్ దగ్గర లోతైన గుంత","Water pipe leaking for two days":"రెండు రోజులుగా నీటి పైపు లీక్","Street lights off on the flyover side":"ఫ్లైఓవర్ వైపు వీధి దీపాలు ఆరిపోయాయి","Garbage not collected":"చెత్త సేకరించలేదు","Kukatpally Main Road":"కూకట్‌పల్లి మెయిన్ రోడ్","KPHB Phase 3":"కేపీహెచ్‌బీ ఫేజ్ 3","JNTU Junction":"జేఎన్‌టీయూ జంక్షన్","Market Lane":"మార్కెట్ లేన్","Civic Pulse: Kukatpally (demo)":"సివిక్ పల్స్: కూకట్‌పల్లి (డెమో)","out of 100 · sample data":"100 కి · నమూనా డేటా","Healthy":"ఆరోగ్యకరం","Hotspot map (sample)":"హాట్‌స్పాట్ మ్యాప్ (నమూనా)","Predictive alerts":"అంచనా హెచ్చరికలు","Resolution performance":"పరిష్కార పనితీరు","Response speed":"స్పందన వేగం","Repeat issue performance":"పునరావృత సమస్యల నిర్వహణ","Citizen satisfaction":"పౌరుల సంతృప్తి","Civic jobs and volunteering":"పౌర ఉద్యోగాలు & స్వచ్ఛంద సేవ","Apply":"దరఖాస్తు","Authority dashboard":"అధికారి డాష్‌బోర్డ్","Open incidents":"తెరిచిన సంఘటనలు","Assign and start work":"కేటాయించి పని ప్రారంభించండి","Override priority":"ప్రాధాన్యత మార్చండి","Keep AI suggestion":"AI సూచన ఉంచండి","Live satellite map":"ప్రత్యక్ష ఉపగ్రహ మ్యాప్","🛰️ Satellite":"🛰️ ఉపగ్రహం","🗺️ Street":"🗺️ వీధి","Open incidents on map":"మ్యాప్‌లో తెరిచిన సంఘటనలు","📡 Track my live location":"📡 నా లైవ్ లొకేషన్ ట్రాక్ చేయండి","⏹ Stop tracking":"⏹ ట్రాకింగ్ ఆపండి","🚓 Dispatch team to top priority":"🚓 అత్యధిక ప్రాధాన్యతకు బృందాన్ని పంపండి","Nearest incident:":"సమీప సంఘటన:","ETA":"చేరే సమయం","Team arrived at":"బృందం చేరుకుంది:","Locating you...":"మీ ప్రదేశం వెతుకుతున్నాను...","Listening...":"వింటున్నాను...","Location added":"లొకేషన్ జోడించబడింది","Description added":"వివరణ జోడించబడింది","Add a photo first":"ముందు ఫోటో జోడించండి","Add a description and location":"వివరణ, ప్రదేశం జోడించండి","New incident created and routed to":"కొత్త సంఘటన సృష్టించబడింది:","Category detected:":"గుర్తించిన వర్గం:","Tap to call 112 now":"ఇప్పుడే 112కి కాల్ చేయడానికి నొక్కండి","Calling 112…":"112కి కాల్ చేస్తున్నాను…","Deep pothole near the bus stop, two-wheelers skidding":"బస్ స్టాప్ దగ్గర లోతైన గుంత, ద్విచక్ర వాహనాలు జారుతున్నాయి","Road caved in after rain, water collecting":"వర్షం తర్వాత రోడ్డు కుంగిపోయింది, నీరు నిలిచింది","Two-wheeler collision, rider injured, ambulance needed":"ద్విచక్ర వాహనాల ఢీ, రైడర్‌కు గాయాలు, అంబులెన్స్ కావాలి","Auto overturned near the signal, traffic blocked":"సిగ్నల్ దగ్గర ఆటో బోల్తా పడింది, ట్రాఫిక్ నిలిచింది","Main pipe leaking, water flowing on the road":"ప్రధాన పైపు లీక్, రోడ్డుపై నీరు ప్రవహిస్తోంది","No water supply since morning":"ఉదయం నుండి నీటి సరఫరా లేదు","Street lights off for three nights":"మూడు రాత్రులుగా వీధి దీపాలు ఆరిపోయాయి","Flickering light pole near the park":"పార్క్ దగ్గర లైట్ స్తంభం మినుకుమినుకుమంటోంది","Garbage pile overflowing near the market":"మార్కెట్ దగ్గర చెత్త పొంగిపొర్లుతోంది","Bins not cleared for four days":"నాలుగు రోజులుగా చెత్తబుట్టలు ఖాళీ చేయలేదు","Open manhole without a cover":"మూత లేని మ్యాన్‌హోల్ తెరిచి ఉంది","Stray dogs near the school gate":"స్కూల్ గేట్ దగ్గర వీధి కుక్కలు","Moosapet Signal":"మూసాపేట సిగ్నల్","Balanagar Bus Stop":"బాలానగర్ బస్ స్టాప్","Live examples":"ప్రత్యక్ష ఉదాహరణలు","LIVE":"లైవ్","Use this example":"ఈ ఉదాహరణ వాడండి","📍 View on map":"📍 మ్యాప్‌లో చూడండి","min ago":"నిమిషాల క్రితం","En route:":"దారిలో:","Example added":"ఉదాహరణ జోడించబడింది"},HI={"Home":"होम","Report":"शिकायत","Track":"ट्रैक","Map":"नक्शा","Pulse":"पल्स","Jobs":"नौकरियाँ","Authority":"अधिकारी","Report it. Track it. Fix it.":"शिकायत करें। ट्रैक करें। समाधान पाएँ।","AI-powered civic reporting for roads, water, accidents and more.":"सड़क, पानी, दुर्घटनाओं और बहुत कुछ के लिए AI-आधारित नागरिक शिकायतें।","Incidents":"घटनाएँ","Reports":"शिकायतें","reports":"शिकायतें","report":"शिकायत","Fixed":"सुलझी","🚨 Road accident? Emergency help":"🚨 सड़क दुर्घटना? आपातकालीन सहायता","Tap to call 112 now":"अभी 112 पर कॉल करने के लिए दबाएँ","Calling 112…":"112 पर कॉल हो रहा है…","🛰️ Open live satellite map":"🛰️ लाइव सैटेलाइट नक्शा खोलें","7 AI tools inside CivicX":"CivicX में 7 AI टूल","AI Civic Vision":"AI सिविक विज़न","Duplicate Detection":"डुप्लिकेट पहचान","Priority Intelligence":"प्राथमिकता इंटेलिजेंस","Civic Voice":"सिविक वॉइस","Proof of Resolution":"समाधान का प्रमाण","Civic Pulse":"सिविक पल्स","Predictive Insights":"भविष्यसूचक जानकारी","Photo to issue, category and severity":"फ़ोटो से समस्या, श्रेणी और गंभीरता","25 reports become 1 incident":"25 शिकायतें = 1 घटना","High, medium or low suggestion":"उच्च, मध्यम या निम्न सुझाव","Speak in Telugu, Hindi or English":"तेलुगु, हिंदी या अंग्रेज़ी में बोलें","Before and after, citizen verifies":"पहले और बाद, नागरिक सत्यापित करता है","Neighbourhood health score":"इलाके का स्वास्थ्य स्कोर","Spot repeat problem areas":"बार-बार की समस्या वाले क्षेत्र","New report":"नई शिकायत","Road / Pothole":"सड़क / गड्ढा","Accident":"दुर्घटना","Water problem":"पानी की समस्या","Street light":"स्ट्रीट लाइट","Garbage":"कचरा","Other":"अन्य","Roads and Buildings Dept.":"सड़क एवं भवन विभाग","Traffic Police + Ambulance":"ट्रैफ़िक पुलिस + एम्बुलेंस","Water Supply Board":"जल आपूर्ति बोर्ड","Electricity Dept.":"बिजली विभाग","Municipal Sanitation":"नगर निगम सफ़ाई","Municipal Office":"नगर निगम कार्यालय","1. Photo (AI Civic Vision)":"1. फ़ोटो (AI सिविक विज़न)","🤖 Analyze photo with AI":"🤖 AI से फ़ोटो जाँचें","2. Or speak in your language (Civic Voice)":"2. या अपनी भाषा में बोलें","🎤 Speak":"🎤 बोलें","Use sample voice":"नमूना आवाज़ उपयोग करें","3. Description":"3. विवरण","4. Location":"4. स्थान","📍 Use my location":"📍 मेरा स्थान उपयोग करें","➡️ Auto-routed to:":"➡️ स्वतः भेजा गया:","Confirm and submit":"पुष्टि करें और जमा करें","Describe the problem":"समस्या बताएँ","Area / landmark":"क्षेत्र / पहचान स्थल","Reported incidents":"दर्ज घटनाएँ","Duplicate reports merge into one incident.":"एक जैसी शिकायतें एक घटना में जुड़ जाती हैं।","Submitted":"जमा की गई","In progress":"काम जारी","Work done: please verify":"काम पूरा: कृपया सत्यापित करें","Verified ✓":"सत्यापित ✓","Low priority":"कम प्राथमिकता","Medium priority":"मध्यम प्राथमिकता","High priority":"उच्च प्राथमिकता","Low":"कम","Medium":"मध्यम","High":"उच्च","✅ Yes, fixed":"✅ हाँ, ठीक हुआ","❌ Still broken":"❌ अब भी खराब","Civic Pulse: Kukatpally (demo)":"सिविक पल्स: कूकटपल्ली (डेमो)","Healthy":"स्वस्थ","Hotspot map (sample)":"हॉटस्पॉट नक्शा (नमूना)","Predictive alerts":"भविष्यसूचक अलर्ट","Resolution performance":"समाधान प्रदर्शन","Response speed":"प्रतिक्रिया गति","Citizen satisfaction":"नागरिक संतुष्टि","Civic jobs and volunteering":"नागरिक नौकरियाँ और स्वयंसेवा","Apply":"आवेदन","Authority dashboard":"अधिकारी डैशबोर्ड","Open incidents":"खुली घटनाएँ","Assign and start work":"सौंपें और काम शुरू करें","Override priority":"प्राथमिकता बदलें","Live satellite map":"लाइव सैटेलाइट नक्शा","🛰️ Satellite":"🛰️ सैटेलाइट","🗺️ Street":"🗺️ सड़क","Open incidents on map":"नक्शे पर खुली घटनाएँ","📡 Track my live location":"📡 मेरा लाइव स्थान ट्रैक करें","⏹ Stop tracking":"⏹ ट्रैकिंग रोकें","🚓 Dispatch team to top priority":"🚓 सबसे ज़रूरी जगह टीम भेजें","Nearest incident:":"निकटतम घटना:","ETA":"पहुँचने में","Team arrived at":"टीम पहुँची:","Listening...":"सुन रहा हूँ...","Location added":"स्थान जोड़ा गया","Description added":"विवरण जोड़ा गया","Add a photo first":"पहले फ़ोटो जोड़ें","Add a description and location":"विवरण और स्थान जोड़ें","Deep pothole near the bus stop":"बस स्टॉप के पास गहरा गड्ढा","Water pipe leaking for two days":"दो दिन से पानी की पाइप लीक","Street lights off on the flyover side":"फ्लाईओवर की तरफ़ स्ट्रीट लाइटें बंद","Garbage not collected":"कचरा नहीं उठाया गया","Kukatpally Main Road":"कूकटपल्ली मेन रोड","KPHB Phase 3":"केपीएचबी फेज़ 3","JNTU Junction":"जेएनटीयू जंक्शन","Market Lane":"मार्केट लेन","Deep pothole near the bus stop, two-wheelers skidding":"बस स्टॉप के पास गहरा गड्ढा, दोपहिया फिसल रहे हैं","Road caved in after rain, water collecting":"बारिश के बाद सड़क धँस गई, पानी जमा है","Two-wheeler collision, rider injured, ambulance needed":"दोपहिया टक्कर, सवार घायल, एम्बुलेंस चाहिए","Auto overturned near the signal, traffic blocked":"सिग्नल के पास ऑटो पलटा, ट्रैफ़िक जाम","Main pipe leaking, water flowing on the road":"मुख्य पाइप लीक, सड़क पर पानी बह रहा है","No water supply since morning":"सुबह से पानी की आपूर्ति नहीं","Street lights off for three nights":"तीन रातों से स्ट्रीट लाइटें बंद","Flickering light pole near the park":"पार्क के पास बत्ती का खंभा टिमटिमा रहा है","Garbage pile overflowing near the market":"बाज़ार के पास कचरे का ढेर बाहर बह रहा है","Bins not cleared for four days":"चार दिन से कूड़ेदान खाली नहीं हुए","Open manhole without a cover":"बिना ढक्कन का खुला मैनहोल","Stray dogs near the school gate":"स्कूल गेट के पास आवारा कुत्ते","Moosapet Signal":"मूसापेट सिग्नल","Balanagar Bus Stop":"बालानगर बस स्टॉप","Live examples":"लाइव उदाहरण","LIVE":"लाइव","Use this example":"यह उदाहरण उपयोग करें","📍 View on map":"📍 नक्शे पर देखें","min ago":"मिनट पहले","En route:":"रास्ते में:","Example added":"उदाहरण जोड़ा गया"},DI={te:TE,hi:HI},KS={},ui="en",lastLL=null,MAP,MG,DG,me,acc,wid=null,AF,LAY={};
+Object.keys(DI).forEach(function(k){KS[k]=Object.keys(DI[k]).sort(function(a,b){return b.length-a.length})});
+function tr(s){var K=KS[ui],D=DI[ui];for(var i=0;i<K.length;i++){if(s.indexOf(K[i])>-1)s=s.split(K[i]).join(D[K[i]])}return s}
+function T(s){return ui==="en"?s:tr(s)}
+function applyLang(){
+  var w=document.createTreeWalker(document.body,4,{acceptNode:function(n){return n.parentNode.closest("script,style,#mp,#gate")?2:1}}),n,a=[];
+  while(n=w.nextNode())a.push(n);
+  a.forEach(function(n){if(n.o===undefined)n.o=n.data;var v=T(n.o);if(n.data!==v)n.data=v});
+  document.querySelectorAll("[placeholder]").forEach(function(e){if(e.po===undefined)e.po=e.placeholder;e.placeholder=T(e.po)});
+}
+new MutationObserver(function(){cancelAnimationFrame(AF);AF=requestAnimationFrame(applyLang)}).observe(document.body,{childList:true,subtree:true,characterData:true});
+function setLang(l){
+  lang=l;ui={"te-IN":"te","hi-IN":"hi"}[l]||"en";document.documentElement.lang=ui;
+  $("lang").querySelectorAll("span").forEach(function(x){x.classList.toggle("on",x.dataset.l===l)});
+  $("sg").querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x.dataset.l===l)});
+  applyLang();drawMap();
+  try{localStorage.setItem("cx",l)}catch(e){}
+}
+var GR={road:"linear-gradient(135deg,#475569,#94a3b8)",acc:"linear-gradient(135deg,#b91c1c,#f97316)",water:"linear-gradient(135deg,#0369a1,#38bdf8)",light:"linear-gradient(135deg,#a16207,#facc15)",waste:"linear-gradient(135deg,#166534,#86efac)",other:"linear-gradient(135deg,#6d28d9,#c4b5fd)"},XG,
+EXS={
+road:[["Deep pothole near the bus stop, two-wheelers skidding","Kukatpally Main Road",24,6,[17.4948,78.3996],45],["Road caved in after rain, water collecting","Moosapet Signal",9,14,[17.4675,78.425],72]],
+acc:[["Two-wheeler collision, rider injured, ambulance needed","JNTU Junction",6,2,[17.4933,78.3915],30],["Auto overturned near the signal, traffic blocked","Balanagar Bus Stop",11,5,[17.471,78.437],60]],
+water:[["Main pipe leaking, water flowing on the road","KPHB Phase 3",8,9,[17.4875,78.389],52],["No water supply since morning","Market Lane",15,31,[17.488,78.412],80]],
+light:[["Street lights off for three nights","JNTU Junction",3,18,[17.4933,78.3915],66],["Flickering light pole near the park","KPHB Phase 3",4,26,[17.4875,78.389],84]],
+waste:[["Garbage pile overflowing near the market","Market Lane",5,12,[17.488,78.412],40],["Bins not cleared for four days","Balanagar Bus Stop",7,44,[17.471,78.437],75]],
+other:[["Open manhole without a cover","Moosapet Signal",13,3,[17.4675,78.425],36],["Stray dogs near the school gate","KPHB Phase 3",5,22,[17.4875,78.389],70]]};
+Object.keys(EXS).forEach(function(k){EXS[k]=EXS[k].map(function(r){return{d:r[0],loc:r[1],n:r[2],m:r[3],ll:r[4],eta:r[5]}})});
+function drawEx(){
+  var c=C[sel];
+  $("ex").innerHTML="<h3>Live examples · "+c.n+"</h3>"+EXS[sel].map(function(x,j){return '<div class="card ex"><div class="exh" style="background:'+GR[sel]+'">'+c.e+'</div><div><div class="row"><b style="font-size:13.5px">'+x.d+'</b><span class="live">LIVE</span></div><div class="mu">📍 '+x.loc+'</div><div class="mu">👥 <span class="xn">'+x.n+'</span> reports · '+x.m+' min ago</div></div><div style="grid-column:1/-1"><div class="mu">'+c.e+' En route: '+c.d+' · ETA <span class="xe">'+x.eta+'</span>s</div><div class="pg"><i style="width:'+(100-x.eta/90*100)+'%"></i></div><button class="btn a s" data-a="u" data-j="'+j+'">Use this example</button><button class="btn a s" data-a="m" data-j="'+j+'">📍 View on map</button></div></div>'}).join("");
+  $("ex").querySelectorAll("button").forEach(function(b){b.onclick=function(){var x=EXS[sel][+b.dataset.j];if(b.dataset.a==="u"){$("desc").value=x.d;$("loc").value=x.loc;lastLL=x.ll;toast("Example added");$("desc").scrollIntoView({behavior:"smooth",block:"center"})}else exMap(x)}});
+}
+function exMap(x){show("map");setTimeout(function(){if(!MAP)return;if(XG)XG.clearLayers();else XG=L.layerGroup().addTo(MAP);L.marker(x.ll,{icon:ico({cat:sel,ov:2})}).addTo(XG).bindPopup("<b>"+C[sel].e+" "+T(C[sel].n)+"</b><br>"+T(x.d)+"<br>📍 "+T(x.loc)).openPopup();MAP.flyTo(x.ll,17)},450)}
+setInterval(function(){var cs=document.querySelectorAll("#ex .ex");EXS[sel].forEach(function(x,j){var c=cs[j];if(!c)return;if(Math.random()<.35){x.n++;c.querySelector(".xn").textContent=x.n}x.eta=x.eta<=0?90:x.eta-3;c.querySelector(".xe").textContent=Math.max(x.eta,0);c.querySelector(".pg i").style.width=(100-Math.max(x.eta,0)/90*100)+"%"})},3000);
+function sosGo(){toast("Calling 112…")}
+function gate(v){$("gate").classList.toggle("off",!v);if(v)window.scrollTo(0,0)}
+document.querySelectorAll("#gate button").forEach(function(b){b.onclick=function(){setLang(b.dataset.l);gate(0)}});
+function cnt(){document.querySelectorAll("#hs b").forEach(function(b){var t=+b.textContent,s=performance.now();(function f(n){var k=Math.min(1,(n-s)/700);b.textContent=Math.round(t*k);if(k<1)requestAnimationFrame(f)})(s)})}
+function ico(i){var c=["#16a34a","#f59e0b","#dc2626"][pr(i)];return L.divIcon({className:"",html:'<div class="pin'+(pr(i)===2?' hot':'')+'" style="--c:'+c+'"><span>'+C[i.cat].e+'</span></div>',iconSize:[36,36],iconAnchor:[18,36],popupAnchor:[0,-34]})}
+function initMap(){
+  if(MAP){MAP.invalidateSize();return}
+  if(!window.L){$("mp").innerHTML='<div class="card mu">Satellite tiles need an internet connection.</div>';return}
+  MAP=L.map("mp",{zoomControl:false}).setView([17.4915,78.4],14);
+  LAY.sat=L.layerGroup([L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Imagery © Esri"}),L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",{maxZoom:19})]).addTo(MAP);
+  LAY.st=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"});
+  L.control.zoom({position:"bottomright"}).addTo(MAP);
+  MAP.on("move",function(){var c=MAP.getCenter();$("hud").textContent="🛰️ LIVE "+c.lat.toFixed(4)+"°N "+c.lng.toFixed(4)+"°E · z"+MAP.getZoom()});
+  $("bs").onclick=function(){lay(1)};$("bt").onclick=function(){lay(0)};
+  drawMap();
+}
+function lay(s){MAP.removeLayer(s?LAY.st:LAY.sat);(s?LAY.sat:LAY.st).addTo(MAP);$("bs").classList.toggle("on",!!s);$("bt").classList.toggle("on",!s)}
+function drawMap(){
+  if(!MAP)return;
+  if(MG)MG.clearLayers();else MG=L.layerGroup().addTo(MAP);
+  var o=INC.filter(function(i){return i.st<3}).sort(function(a,b){return pr(b)-pr(a)||b.n-a.n});
+  o.forEach(function(i){var c=C[i.cat],p=pr(i);i.mk=L.marker(i.ll,{icon:ico(i),zIndexOffset:p*100}).addTo(MG).bindPopup("<b>"+c.e+" "+T(c.n)+"</b><br>"+T(i.loc)+"<br>"+T(PN[p]+" priority")+" · "+T(ST[i.st])+"<br>👥 "+i.n+" "+T("reports"))});
+  $("ml").innerHTML=o.map(function(i){return '<div class="card ml" data-i="'+i.id+'"><div class="row"><b>'+C[i.cat].e+" "+C[i.cat].n+"</b>"+pill(i)+'</div><div class="mu">📍 '+i.loc+"</div></div>"}).join("");
+  $("ml").querySelectorAll(".ml").forEach(function(d){d.onclick=function(){var i=INC.find(function(x){return x.id==+d.dataset.i});MAP.flyTo(i.ll,17);i.mk.openPopup();window.scrollTo(0,0)}});
+}
+function trk(){
+  if(!MAP){toast("Map not ready");return}
+  if(wid!==null){navigator.geolocation.clearWatch(wid);wid=null;$("trk").textContent="📡 Track my live location";return}
+  if(!navigator.geolocation){toast("Location not supported");return}
+  toast("Locating you...");$("trk").textContent="⏹ Stop tracking";
+  wid=navigator.geolocation.watchPosition(function(p){
+    var c=[p.coords.latitude,p.coords.longitude];lastLL=c;
+    if(!me){me=L.marker(c,{icon:L.divIcon({className:"",html:'<div class="me"></div>',iconSize:[18,18]})}).addTo(MAP);acc=L.circle(c,{radius:p.coords.accuracy,color:"#2f8bff",weight:1,fillOpacity:.1}).addTo(MAP);MAP.flyTo(c,16)}
+    else{me.setLatLng(c);acc.setLatLng(c).setRadius(p.coords.accuracy)}
+    var n=INC.filter(function(i){return i.st<3}).map(function(i){return[i,MAP.distance(c,i.ll)]}).sort(function(a,b){return a[1]-b[1]})[0];
+    if(n)$("nr").textContent="Nearest incident: "+C[n[0].cat].n+" · "+(n[1]<1000?Math.round(n[1])+" m":(n[1]/1000).toFixed(1)+" km");
+  },function(){toast("Location blocked, type it instead");wid=null;$("trk").textContent="📡 Track my live location"},{enableHighAccuracy:true});
+}
+function dispatch(){
+  if(!MAP){toast("Map not ready");return}
+  var o=INC.filter(function(i){return i.st<3}).sort(function(a,b){return pr(b)-pr(a)||b.n-a.n})[0];
+  if(!o)return;
+  if(DG){DG.clearLayers();clearInterval(DG.t)}else DG=L.layerGroup().addTo(MAP);
+  var a=[o.ll[0]+.011,o.ll[1]-.013],b=o.ll,k=0,N=80;
+  L.polyline([a,b],{color:"#38bdf8",dashArray:"6 8",weight:3}).addTo(DG);
+  var m=L.marker(a,{icon:L.divIcon({className:"",html:'<div class="unit">🚓</div>',iconSize:[34,34]})}).addTo(DG);
+  MAP.fitBounds([a,b],{padding:[60,60]});
+  DG.t=setInterval(function(){k++;m.setLatLng([a[0]+(b[0]-a[0])*k/N,a[1]+(b[1]-a[1])*k/N]);$("eta").textContent="🚓 ETA "+Math.ceil((N-k)/10)+"s → "+o.loc;if(k>=N){clearInterval(DG.t);toast("Team arrived at "+o.loc)}},100);
+}
+drawCats();drawAll();drawPulse();drawJobs();
+try{var sv=localStorage.getItem("cx");if(sv)setLang(sv)}catch(e){}
+</script>
+</body>
+</html>
